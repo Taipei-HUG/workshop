@@ -83,7 +83,7 @@ resource "aws_instance" "web" {
 - ...
 
 ## CH04 Terraform Practices
-**目標**: 藉由開發 Module 以及第三方工具 [**Terragrount**]
+**目標**: 藉由開發 Module 以及第三方工具 [**Terragrunt**]
 (https://github.com/gruntwork-io/terragrunt) 達成軟體開發 [**SOLID**](https://en.wikipedia.org/wiki/SOLID) 準則
 
 - Module Development
