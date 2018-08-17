@@ -1,14 +1,47 @@
 # Taipei HUG Terraform Workshop
 
 ## Terraform 是什麼？
-使用公有雲已經是不可逆的趨勢，但隨著雲端服務越用越多，管理的成本也越來越高，除了需要耗費龐大的時間之外；人為失誤，交接困難都是手動操作的缺點
+開一台 AWS Ubuntu 14.04 最新版本的機器，並且新增一個 Tag 為 "HelloWorld" 可以用下面的程式碼辦到，或許第一次寫沒有手點來得快，但是...隨著雲端服務越用越多，管理的成本也越來越高，除了需要耗費龐大的時間之外；人為失誤，交接困難都是手動操作的缺點
 
-使用 Terraform 可讓本來手動操作的行為轉化為程式語言，也就是所謂的 Infrastructure as Code (IaC)，讓維運人員使用程式碼便能自動化管理整個雲端服務
+使用 Terraform 可讓本來手動操作的行為轉化為程式語言，也就是所謂的 Infrastructure as Code (IaC)，而且他還跨各家公有雲服務平台，讓維運人員使用程式碼便能自動化管理整個雲端服務
+
+```
+provider "aws" {
+  region = "us-west-2"
+}
+
+data "aws_ami" "ubuntu" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  owners = ["099720109477"] # Canonical
+}
+
+resource "aws_instance" "web" {
+  ami           = "${data.aws_ami.ubuntu.id}"
+  instance_type = "t2.micro"
+
+  tags {
+    Name = "HelloWorld"
+  }
+}
+```
 
 ## 為什麼有這個 Workshop?
 此次 Taipei HashiCorp User Group 與 DevOpsDays Taipei 2018 舉辦工作坊系列活動，歡迎 **"厭惡手動操作 AWS, Azure, GCP Console， 想要一行指令建立/管理龐大雲端架構的人來參加"** ([**報名網址**](https://devopsdays.tw/workshop.html#workshop0915))！
 
-P.S. 課程內容搭配 **AWS Elastic Kubernetes Service** 實際操練 ，一次學會兩大維運利器！
+
+- P.S. 課程內容搭配 **AWS Elastic Kubernetes Service** 實際操練 ，一次學會兩大維運利器！
+- P.S. AWS 台灣特別贊助 **"US$50 AWS Credit！"**
 
 
 ## CH00 Environment Setup
