@@ -2,6 +2,9 @@
 
 ## Welcom to Join HashiCorp Terraform Workshop ^^
 
+## * Please Complete This Exercise Before 2018/09/15, Due to AWS Account Need to Takes Some Time to Enable Cloud9...
+
+
 ---
 
 # Outline
@@ -18,7 +21,6 @@
 ## What is the First Thing Before Starting to Explore Terraform? 
 
 ## A: Of course, A Cloud Provider Account!! And This Workshop Choose AWS Plaform
-
 
 ---
 
@@ -91,6 +93,8 @@
 ## - Click `Create Environment` Button
 
 ## - Then Just Waiting Few Minutes
+
+## - Brand New AWS Account May Create Fail, Due to AWS Takes Time to Enable Cloud9 Function
 
 ---
 
