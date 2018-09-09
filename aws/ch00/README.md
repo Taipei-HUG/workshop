@@ -116,6 +116,8 @@
 
 ## - HashiCorp Terraform
 
+## - Gruntwork Terragrunt
+
 ## - kubectl
 
 ## - heptio-authenticator-aws
@@ -138,6 +140,29 @@ name:~/environment $ rm terraform_0.11.8_linux_amd64.zip
 name:~/environment $ terraform version
 
 Terraform v0.11.8
+```
+---
+
+# Gruntwork Terragrunt
+
+Follow Below Command to Install Terragrunt
+
+```
+name:~/environment $ curl -Lo terragrunt_linux_amd64 https://github.com/gruntwork-io/terragrunt/releases/download/v0.16.8/terragrunt_linux_amd64
+
+name:~/environment $ chmod +x terragrunt_linux_amd64
+
+name:~/environment $ sudo mv terragrunt_linux_amd64 /usr/local/bin/terragrunt
+
+name:~/environment $ terragrunt help
+
+...
+
+VERSION:
+   v0.16.8
+
+AUTHOR(S):
+   Gruntwork <www.gruntwork.io>
 ```
 ---
 
