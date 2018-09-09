@@ -17,7 +17,7 @@
 
 ## Preparation
  
-### Kubernetes Client Install Guide
+### Kubernetes Client 
 - https://kubernetes.io/docs/tasks/tools/install-kubectl/
 
 ### AWS IAM Authenticator
@@ -47,22 +47,31 @@ Enter a value:
 ### Get Started - Part 2
 
 - `$ terraform apply`
-```
-# need to input the key pair name
-var.key_pair_name
-  The key pair name for access bastion ec2
-Enter a value:
-```
 - `$ export KUBECONFIG=.terraform/kubeconfig`
+- `$ kubectl cluster-info`
 - `$ kubectl get node`
+
+---
+
+## Kubernetes Overview
+
+![](images/kubernetes-overview.png)
+
+---
+
+## Kubernetes Architecture
+
+![](images/kubernetes-architecture.png)
 
 ---
 
 ## Vishwakarma Kubernetes
 
-![](images/VishwakarmaKubernetes.png)
+![](images/vishwakarma-kubernetes.png)
 
 ---
+
+
 
 ## Vishwakarma modules
 
