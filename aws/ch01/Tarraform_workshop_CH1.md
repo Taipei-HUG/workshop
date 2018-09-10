@@ -2,6 +2,12 @@
 # Terraform CH1 Basics
 
 ---
+# Objectives
+- AWS Infrastrature
+- What Terraform is
+- Terraform commands
+
+---
 # Agenda
 - AWS Introduce
   - VPC/EC2/Security Group/ELB/UserData/S3
@@ -54,11 +60,11 @@ resource "aws_instance" "example" {
 ---
 # Terraform Commands
 - init (初始化)
-- plan
-- apply
-- destroy
-- get
-- graph
+- plan (查看計畫)
+- apply (執行計畫)
+- destroy (移除資源)
+- get (取得相關模組)
+- graph (繪製元件關係圖)
 
 
 ---
