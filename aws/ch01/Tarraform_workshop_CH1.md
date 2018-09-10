@@ -26,19 +26,22 @@
 # Basic AWS Introduces
 
 ---
+![bg 95%](./images/AWS_VPC.png)
 ## AWS Component
 - VPC
 - Security Group
-- EC2 with UserData
+- EC2
 - S3
+
+---
+## AWS Component
+![](./images/AWS_VPC.png)
 
 ---
 ## First EC2 Instance
 main.tf
 ```
 provider "aws" {
-  access_key = "FKIAI3X65USPFQAABBCC"
-  secret_key = "iJT0R6a77884dwijqQ/rAuejNg3pfHqZIi5Aq04e"
   region     = "us-east-1"
 }
 
@@ -47,6 +50,16 @@ resource "aws_instance" "example" {
   instance_type = "t2.micro"
 }
 ```
+
+---
+# Terraform Commands
+- init (初始化)
+- plan
+- apply
+- destroy
+- get
+- graph
+
 
 ---
 ## Terraform init
@@ -74,8 +87,6 @@ backend.tf
 ```
 terraform {
   backend "s3" {
-    access_key = "FKIAI3X65USPFQAABBCC"
-    secret_key = "iJT0R6a77884dwijqQ/rAuejNg3pfHqZIi5Aq04e"
     bucket = "a-long-name-to-s3-bucket-include-date"
     key    = "prod/terraform.tfstate"
     region = "us-east-1"
@@ -88,8 +99,6 @@ terraform {
 main.tf
 ```
 provider "aws" {
-  access_key = "FKIAI3X65USPFQAABBCC"
-  secret_key = "iJT0R6a77884dwijqQ/rAuejNg3pfHqZIi5Aq04e"
   region     = "us-east-1"
 }
 
@@ -112,8 +121,6 @@ variable "region" {
 main.tf
 ```
 provider "aws" {
-  access_key = "${var.access_key}"
-  secret_key = "${var.secret_key}"
   region     = "${var.region}"
 }
 
@@ -127,8 +134,6 @@ resource "aws_instance" "example" {
 ## Terraform Input Variables
 prod.tfvar
 ```
-access_key="FKIAI3X65USPFQAABBCC"
-secret_key="iJT0R6a77884dwijqQ/rAuejNg3pfHqZIi5Aq04e"
 region="us-east-1"
 ```
 Execute command:
@@ -153,3 +158,21 @@ output "public_ip" {
 # ![](./images/output.png)
 
 ---
+# Genarate ssh key
+
+---
+## Genarate ssh key
+`$ ssh-keygen -f /home/cloud9/.ssh/id_rsa -P ''`
+
+---
+# Create AWS Keypair
+
+---
+## Create AWS Keypair
+main.tf
+```
+resource "aws_key_pair" "devopsdays-workshop" {
+  key_name   = "devopsdays-workshop"
+  public_key = "${file(pathexpand("/home/cloud9/.ssh/id_rsa.pub"))}"
+}
+```
