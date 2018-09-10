@@ -73,7 +73,7 @@ resource "aws_instance" "example" {
 # ![](./images/init.png)
 
 ---
-## Terraform apply
+## Terraform plan / Terraform apply
 `$ terraform apply`
 # ![](./images/apply.png)
 
@@ -85,7 +85,7 @@ It's a JSON file, Terraform use it to map from real world resource to Terraform 
 ---
 ## Terraform destroy
 `$ terraform destroy`
-# ![](./images/destroy.png)
+![](./images/destroy.png)
 
 ---
 ## Terraform Remote State
@@ -118,11 +118,11 @@ resource "aws_instance" "example" {
 ## Terraform Input Variables
 variables.tf
 ```
-variable "access_key" {}
-variable "secret_key" {}
 variable "region" {
   default = "us-east-1"
 }
+variable "instance_type" {}
+variable "ami" {}
 ```
 main.tf
 ```
@@ -131,8 +131,8 @@ provider "aws" {
 }
 
 resource "aws_instance" "example" {
-  ami           = "ami-2757f631"
-  instance_type = "t2.micro"
+  ami           = "${var.ami}"
+  instance_type = "${var.instance_type}"
 }
 ```
 
@@ -161,7 +161,7 @@ output "public_ip" {
   value = "${aws_instance.example.public_ip}"
 }
 ```
-# ![](./images/output.png)
+![](./images/output.png)
 
 ---
 # Genarate ssh key
@@ -175,6 +175,8 @@ output "public_ip" {
 
 ---
 ## Create AWS Keypair
+execute `$ ./genkey.sh`
+
 main.tf
 ```
 resource "aws_key_pair" "devopsdays-workshop" {
@@ -182,3 +184,8 @@ resource "aws_key_pair" "devopsdays-workshop" {
   public_key = "${file(pathexpand("/home/cloud9/.ssh/id_rsa.pub"))}"
 }
 ```
+---
+# Key Takeaways
+- Known AWS infrastructure 
+- Terraform commands
+- Terraform Variable/State File/Output
