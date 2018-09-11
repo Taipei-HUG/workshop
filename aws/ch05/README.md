@@ -2,6 +2,14 @@
 
 # CH05 EKS
 
+---
+
+## Objectives
+
+- ### EKS Overview
+- ### Make a EKS Clsuter with Terraform
+- ### Concept about making a EKS Cluster for production with Terraform
+
 --- 
 
 ## EKS Cluster
@@ -15,6 +23,26 @@
     - eks
 ---
 
+- ### Directories:
+
+```
+├── container_linux
+├── eks
+│   ├── ignition
+│   │   └── resources
+│   │       ├── dropins
+│   │       ├── kubernetes
+│   │       ├── services
+│   │       └── sysctl.d
+│   ├── master
+│   │   └── resources
+│   ├── worker-asg
+│   ├── worker-common
+│   └── worker-spot
+└── network
+```
+---
+
 ## Preparation
  
 ### Kubernetes Client 
@@ -22,10 +50,12 @@
 
 ### AWS IAM Authenticator
 - https://github.com/kubernetes-sigs/aws-iam-authenticator
-- AWS EKS access permission integrates with AWS IAM, in order to let AWS EKS know whether you have the right to access, heptio-authenticator-aws needs to be [installed](https://docs.aws.amazon.com/eks/latest/userguide/configure-kubectl.html) in the client side
+  - AWS EKS access permission integrates with AWS IAM
+  - heptio-authenticator-aws needs to be [installed](https://docs.aws.amazon.com/eks/latest/userguide/configure-kubectl.html) in the client side
 
 ### Key Pair
 - In order to access worker node through ssh protocol, please create a key pair in example region US West (Oregon) us-west-2
+  - `devopsdays-workshop`
 
 --- 
 
@@ -41,7 +71,7 @@ var.key_pair_name
   The key pair name for access bastion ec2
 Enter a value:
 ```
-
+- `devopsdays-workshop`
 --- 
 
 ### Get Started - Part 2
@@ -75,39 +105,18 @@ Enter a value:
 
 ## Vishwakarma modules
 
-- **aws/network**
+- ### aws/network
   - One AWS VPC includes private and public subnet
-  - One ec2 instance called bastion hosts in public subnet, can access the resource hosting in the private subnet.
+  - One EC2 instance called bastion hosts in public subnet, can access the resource hosting in the private subnet.
 
-- **aws/eks/master**
+- ### aws/eks/master
   - Create the AWS EKS cluster
 
-- **aws/eks/worker-asg**
+- ### aws/eks/worker-asg
   - Create a AWS auto-scaling group with CoreOS container linux and leverage ignition to provision
   - Register to EKS cluster automatically
 
-- **aws/eks/worker-spot**
-
----
-
-- directories:
-
-```
-├── container_linux
-├── eks
-│   ├── ignition
-│   │   └── resources
-│   │       ├── dropins
-│   │       ├── kubernetes
-│   │       ├── services
-│   │       └── sysctl.d
-│   ├── master
-│   │   └── resources
-│   ├── worker-asg
-│   ├── worker-common
-│   └── worker-spot
-└── network
-```
+- ### aws/eks/worker-spot
 
 ---
 
@@ -127,23 +136,21 @@ module "network" {
 
 --- 
 
-## Base VPC Networking
+## VPC Networking
 - One VPC
   - One Public Subnet
   - One Private Subnet
-  - An internet gateway, and setup the subnet routing to route external traffic through the internet gateway:
+  - An internet gateway
+  - setup the subnet routing to route external traffic through the internet gateway:
 
 - Bastion is a `jump server`
   - https://docs.aws.amazon.com/quickstart/latest/linux-bastion/architecture.html
 
 --- 
 
-## AWS VPC in Terraform 
-
---- 
-
 ### EKS Master Module
 - module: `vishwakarma/aws/eks/master`
+- This is where the EKS service comes into play. 
 - files:
 ```
 └── master
@@ -162,18 +169,19 @@ module "network" {
 
 --- 
 
-## Kubernetes Master
-- This is where the EKS service comes into play. 
-- need
-  - VPC
-  - IAM
-  - SecurityGroup
+
+## EKS Permission
+
+- ### File: `aws/eks/master/role-eks.tf`
+
+- ### Purpose:
+  - ####  Give the suitable permission for access EKS Service And Create EKS Cluster
 
 ---
 
-### IAM Roles
+### EKS Permission - IAM Roles
 - File: `aws/eks/master/role-eks.tf`
-- Purpose:
+- Action:
   - Create IAM Role `AWSServiceRoleForAmazonEKS`
   - Uses the following IAM policies:
     - `AmazonEKSServicePolicy`
@@ -185,22 +193,40 @@ module "network" {
 
 ---
 
-### EKS Cluster Security Group
+## EKS Master Firewall
+
+- ### File: `aws/eks/master/security-group-eks.tf`
+
+- ### Purpose:
+  - #### Cluster communication with worker nodes
+  - #### Allow instances in VPC to communicate with the cluster API Server
+
+--- 
+
+### EKS Master Firewall - Security Group
 - File: `aws/eks/master/security-group-eks.tf`
-- Purpose:
-  - Cluster communication with worker nodes
-  - Allow instances in VPC to communicate with the cluster API Server
+- Action:
+  - AWS Security Group
+    - `eks_cluster_egress` 
+    - `eks_cluster_ingress_https`
 - Terraform Resources
   - `aws_security_group`
   - `aws_security_group_rule`
-    - `eks_cluster_egress` 
-    - `eks_cluster_ingress_https`
 
 ---
 
-### EKS Cluster Master 
+## EKS Master 
+
+- ### File: `aws/eks/master/cluster.tf`
+
+- ### Purpose:
+  - #### Create Cluster Master with EKS Service
+
+---
+
+### EKS Master - Create Master 
 - File `aws/eks/master/cluster.tf`
-- Purpose:
+- Action:
   - Create Cluster Master with EKS Service
 - Terraform Resources
   - `aws_eks_cluster`
@@ -208,11 +234,20 @@ module "network" {
 
 ---
 
-### Obtaining kubectl Configuration From Terraform
+## Obtaining kubectl Configuration 
+- ### File: `aws/eks/master/s3-kubeconfig.tf`
+- ### Purpose:
+  - #### Generate the kubeconfig file for kubectl
+  - #### Save the kubeconfig in AWS S3 for using in future
+
+---
+
+
+### Obtaining kubectl Configuration
 - File: `aws/eks/master/s3-kubeconfig.tf`
-- Purpose:
-  - Generate the kubeconfig file for kubectl
-  - save the kubeconfig in S3
+- Action:
+  - render kubeconfig with data from eks
+  - create S3 bucket for saving the kubeconfig
 - Terraform Resources
   - `template_file`
   - `local_file`
@@ -221,13 +256,21 @@ module "network" {
 
 ---
 
-### Required Kubernetes Configuration to Join Worker Nodes
+### Kubernetes Configuration to Join Worker Nodes
+
+- ### File:`aws/eks/master/aws-auth-cm.tf`
+- ### Purpose:
+  - #### Allow worker nodes to join the cluster via AWS IAM role authentication.
+
+---
+
+### Kubernetes Configuration to Join Worker Nodes
 
 - File:`aws/eks/master/aws-auth-cm.tf`
-- Purpose:
-  - The EKS service does not provide a cluster-level API parameter or resource to automatically configure the underlying Kubernetes cluster to allow worker nodes to join the cluster via AWS IAM role authentication.
-  - To output an example IAM Role authentication ConfigMap from your Terraform configuration
-  - Kubectl apply the ConfigMap
+- Action:
+	- To output an example IAM Role authentication ConfigMap from your Terraform configuration
+  	- Kubectl apply the ConfigMap
+
 - Terraform Resources
   - `template_file`
   - `local_file`
@@ -235,7 +278,8 @@ module "network" {
 
 ---
 
-## Kubernetes Worker Nodes
+
+## EKS Worker Nodes
 - worker_common
   - Initailization of EC2 Instance
 - wroker_asg
@@ -243,11 +287,20 @@ module "network" {
 
 ---
 
-### Worker Node IAM Role and Instance Profile
+## Worker Node Permission - IAM Role and Instance Profile
+- ### File: `aws/eks/worker-common/role.tf`
+- ### Purpose:
+  - #### IAM role and policy to allow the worker nodes to manage or retrieve data from other AWS services.
+    - #### Network
+    - #### ContainerRegistry
+  - #### It is used to allow worker nodes to join the cluster.
+
+
+---
+
+### Worker Node Permission - IAM Role and Instance Profile
 - File: `aws/eks/worker-common/role.tf`
-- Purpose:
-  - IAM role and policy to allow the worker nodes to manage or retrieve data from other AWS services. 
-  - It is used to allow worker nodes to join the cluster.
+- Action:
   - Create IAM Role `EKSWorkerAssumeRole`
   - Policy 
     - `AmazonEKSWorkerNodePolicy`
@@ -257,11 +310,21 @@ module "network" {
 
 ---
 
-### Worker Node Security Group
+## Worker Node Filewall
+
+- ### File: `aws/eks/master/security-group-worker.tf`
+- ### Purpose:
+  - ### Controls networking access to the Kubernetes worker nodes.
+
+---
+
+### Worker Node Filewall - Security Group
 
 - File: `aws/eks/master/security-group-worker.tf`
 - Purpose:
   - Controls networking access to the Kubernetes worker nodes.
+- Action:
+  - AWS Security Group
   	- `workers_egress_internet`
     - `workers_ingress_self`
     - `workers_ingress_cluster`
@@ -282,6 +345,7 @@ module "network" {
 
 ### AMI
 - First, let us create a data source to fetch the latest Amazon Machine Image (AMI) that Amazon provides with an EKS compatible Kubernetes baked in.
+
 - `aws/eks/worker-asg/asg.tf`
   - `aws_autoscaling_group`
     - `aws_launch_configuration`
@@ -290,31 +354,12 @@ module "network" {
 
 ---
 
-### AMI for module
+### AMI with Terraform module
 - `module.worker_common.coreos_ami_id`
-- `aws/eks/worker-common/ami.tf`
-- ``module.container_linux`
-  - try to get latest version of coreos, if needed
-```
-data "aws_ami" "coreos_ami" {
-  filter {
-    name   = "name"
-    values = ["CoreOS-${var.container_linux_channel}-${module.container_linux.version}-*"]
-  }
-  filter {
-    name   = "architecture"
-    values = ["x86_64"]
-  }
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-  filter {
-    name   = "owner-id"
-    values = ["${local.ami_owner}"]
-  }
-}
-```
+  - File: `aws/eks/worker-common/ami.tf`
+  - `module.container_linux`
+    - try to get latest version of coreos, if needed
+
 ---
 
 ###  AutoScaling Launch Configuration
@@ -338,8 +383,8 @@ resource "aws_launch_configuration" "workers" {
 - Ignition is a new provisioning utility designed specifically for CoreOS Container Linux. 
 - https://coreos.com/ignition/docs/latest/
 
-- `aws/eks/ignition`
-- `aws/eks/worker_common/ignition`
+- File: `aws/eks/ignition`
+- File: `aws/eks/worker_common/ignition`
   - locksmithd
   - docker
   - ca
@@ -349,7 +394,7 @@ resource "aws_launch_configuration" "workers" {
 ---
 
 ###  User Data - ignition - utilities
-
+- File: `aws/eks/worker_common/ignition`
 ```
 data "ignition_config" "main" {
   files = ["${compact(list(
@@ -373,3 +418,17 @@ data "ignition_config" "main" {
 
 ---
 
+## Key Takeaways
+
+- ### EKS Overview
+  - EKS Master
+  - EKS WorkNode
+- ### Make a EKS Clsuter with Terraform
+  - AWS EKS Service
+  - Other Service ...
+- ### Concept about making a EKS Cluster for production with Terraform
+  - Perrmision
+  - Network & Firewall
+  - Instances & Utilities
+
+---
