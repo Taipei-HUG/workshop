@@ -74,7 +74,7 @@ ${var.example_list[i]}
 
 ## Practice
 
-Try [ch03/300-variables-demo](https://github.com/Taipei-HUG/workshop/aws/ch03/300-variables-demo)
+Try [ch03/300-variables-demo](https://github.com/Taipei-HUG/workshop/tree/master/aws/ch03/300-variables-demo)
 
 ---
 
@@ -95,7 +95,7 @@ ${module.foo.example_output}
 
 ## Practice
 
-Try [ch03/301-module-output-demo](https://github.com/Taipei-HUG/workshop/aws/ch03/301-module-output-demo)
+Try [ch03/301-module-output-demo](https://github.com/Taipei-HUG/workshop/tree/master/aws/ch03/301-module-output-demo)
 
 ---
 
@@ -120,7 +120,7 @@ ${data.template_file.foo.*.rendered}
 
 ## Practice
 
-Try [ch03/302-count-demo](https://github.com/Taipei-HUG/workshop/aws/ch03/302-count-demo)
+Try [ch03/302-count-demo](https://github.com/Taipei-HUG/workshop/tree/master/aws/ch03/302-count-demo)
 
 ---
 
@@ -191,11 +191,11 @@ resource "local_file" "foo" {
 
 ## Practice
 
-Try [ch03/303-attributes-path-demo](https://github.com/Taipei-HUG/workshop/aws/ch03/303-attributes-path-demo)
+Try [ch03/303-attributes-path-demo](https://github.com/Taipei-HUG/workshop/tree/master/aws/ch03/303-attributes-path-demo)
 
 ---
 
-# Built-in Functionsgi
+# Built-in Functions
 
 [List of builin functions](https://www.terraform.io/docs/configuration/interpolation.html#supported-built-in-functions)
 
@@ -280,7 +280,7 @@ v = lookup(map, "foo", "bar")
 
 ## Practice
 
-Try [ch03/304-builtin-functions-demo](https://github.com/Taipei-HUG/workshop/aws/ch03/304-builtin-functions-demo)
+Try [ch03/304-builtin-functions-demo](https://github.com/Taipei-HUG/workshop/tree/master/aws/ch03/304-builtin-functions-demo)
 
 ---
 
@@ -365,7 +365,7 @@ resource "local_file" "foo_hash" {
 
 ## Demo
 
-Try [ch03/305-complex-computations](https://github.com/Taipei-HUG/workshop/aws/ch03/305-complex-computations)
+Try [ch03/305-complex-computations](https://github.com/Taipei-HUG/workshop/tree/master/aws/ch03/305-complex-computations)
 
 ---
 
@@ -447,7 +447,7 @@ output "success_for_list" {
 
 ## Demo
 
-Try [ch03/306-err-conditional](https://github.com/Taipei-HUG/workshop/aws/ch03/306-err-conditional)
+Try [ch03/306-err-conditional](https://github.com/Taipei-HUG/workshop/tree/master/aws/ch03/306-err-conditional)
 
 ---
 
