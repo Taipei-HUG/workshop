@@ -10,7 +10,7 @@
 ---
 # Agenda
 - Terraform Introduction
-- AWS Introducea
+- AWS Introduction
   - VPC/EC2/Security Group/ELB/S3
 - Setup Cloud9 Envieonment
 - Spining up an instance with Terraform
