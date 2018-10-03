@@ -175,7 +175,7 @@ terragrunt = {
   # Terragrunt will copy the Terraform configurations specified by the source parameter, along with any files in the
   # working directory, into a temporary folder, and execute your Terraform commands in that folder.
   terraform {
-    source = "github.com/Taipei-HUG/terraform-aws-frontend"
+    source = "github.com/Taipei-HUG/terraform-aws-frontend?ref=v0.0.1"
   }
 
   # Include all settings from the root terraform.tfvars file
@@ -270,3 +270,18 @@ provider "template" {
 ## - `Include/Retrive` Module from `GitHub`
 
 ## - Create AWS Resource in Multiple Region, `But Not Writing Any Terraform Code`
+
+---
+
+# Destroy Resource Created by Exercise
+
+```
+~$ cd ch04/examples/account_a/ap-northeast-1/dev/frontend
+
+~$ terragrunt destroy
+
+~$ cd ch04/examples/account_a/us-west-2/dev/frontend
+
+~$ terragrunt destroy
+
+```

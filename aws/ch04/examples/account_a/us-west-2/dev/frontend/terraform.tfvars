@@ -8,7 +8,7 @@ terragrunt = {
   # Terragrunt will copy the Terraform configurations specified by the source parameter, along with any files in the
   # working directory, into a temporary folder, and execute your Terraform commands in that folder.
   terraform {
-    source = "github.com/Taipei-HUG/terraform-aws-frontend"
+    source = "github.com/Taipei-HUG/terraform-aws-frontend?ref=v0.0.1"
   }
 
   # Include all settings from the root terraform.tfvars file
