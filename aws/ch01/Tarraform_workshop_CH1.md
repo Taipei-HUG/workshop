@@ -110,15 +110,29 @@ It's a JSON file, Terraform use it to map from real world resource to Terraform 
 ![](./images/destroy.png)
 
 ---
+## Create S3 bucket for Remote State
+
+---
+## Create S3 bucket for Remote State
+`$ cd workshop/aws/ch01/110-create-s3-bucket`
+`$ terraform apply`
+
+```
+Outputs:
+
+s3_bucket_name = worksop-s3-bucket-20181003122734550400000001
+```
+
+---
 ## Terraform Remote State
-`$ cd workshop/aws/ch01/110-remote-state-variables`
+`$ cd workshop/aws/ch01/120-remote-state-variables`
 backend.tf
 ```
 terraform {
   backend "s3" {
-    bucket = "a-long-name-to-s3-bucket-include-date"
+    bucket = "s3-bucket-name-from-example-110"
     key    = "prod/terraform.tfstate"
-    region = "us-east-1"
+    region = "us-west-2"
   }
 }
 ```
@@ -207,7 +221,7 @@ output "public_ip" {
 ---
 ## Create AWS Keypair
 Execute 
-`$ cd workshop/aws/ch01/110-remote-state-variables`
+`$ cd workshop/aws/ch01/130-create-keypair`
 `$ ./genkey.sh`
 
 main.tf
