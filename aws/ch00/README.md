@@ -274,4 +274,4 @@ Usage:
 
 ## You Have Completed the Workshop Environment Setup
 
-## Looking Forward to Seeing You at 9/15
+## Looking Forward to Seeing You at 10/06
