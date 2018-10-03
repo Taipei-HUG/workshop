@@ -12,37 +12,6 @@
 
 --- 
 
-## EKS Cluster
-- repo: [GitHub - getamis/vishwakarma](https://github.com/getamis/vishwakarma)
-
-### Modules
-- path: `vishwakarma/aws`
-- Terraform modules :
-    - network
-    - container_linux
-    - eks
----
-
-- ### Directories:
-
-```
-├── container_linux
-├── eks
-│   ├── ignition
-│   │   └── resources
-│   │       ├── dropins
-│   │       ├── kubernetes
-│   │       ├── services
-│   │       └── sysctl.d
-│   ├── master
-│   │   └── resources
-│   ├── worker-asg
-│   ├── worker-common
-│   └── worker-spot
-└── network
-```
----
-
 ## Preparation
  
 ### Kubernetes Client 
@@ -101,7 +70,36 @@ Enter a value:
 
 ---
 
+## EKS Cluster
+- repo: [GitHub - getamis/vishwakarma](https://github.com/getamis/vishwakarma)
 
+### Modules
+- path: `vishwakarma/aws`
+- Terraform modules :
+    - network
+    - container_linux
+    - eks
+---
+
+- ### Directories:
+
+```
+├── container_linux
+├── eks
+│   ├── ignition
+│   │   └── resources
+│   │       ├── dropins
+│   │       ├── kubernetes
+│   │       ├── services
+│   │       └── sysctl.d
+│   ├── master
+│   │   └── resources
+│   ├── worker-asg
+│   ├── worker-common
+│   └── worker-spot
+└── network
+```
+---
 
 ## Vishwakarma modules
 
@@ -121,20 +119,11 @@ Enter a value:
 ---
 
 ### Example
-- path: `vishwakarma/examples/eks_worker`
-- `main.tf`
 
-#### network 
-- code:
-```
-module "network" {
-  source           = "../../aws//network"
-  aws_region       = "${var.aws_region}"
-  bastion_key_name = "${var.key_pair_name}"
-}
-```
+- File: [examples/eks_worker/main.tf](https://github.com/getamis/vishwakarma/blob/master/examples/eks_worker/main.tf)
 
 --- 
+
 
 ## VPC Networking
 - One VPC
@@ -153,18 +142,20 @@ module "network" {
 - This is where the EKS service comes into play. 
 - files:
 ```
-└── master
-    ├── aws-auth-cm.tf
-    ├── cluster.tf
-    ├── main.tf
-    ├── outputs.tf
-    ├── resources
-    │   ├── aws-auth-cm.yaml.tpl
-    │   └── kubeconfig
-    ├── role.tf
-    ├── s3.tf
-    ├── sg.tf
-    └── variables.tf
+master
+├── aws-auth-cm.tf
+├── cluster.tf
+├── main.tf
+├── outputs.tf
+├── resources
+│   ├── aws-auth-cm.yaml.tpl
+│   └── kubeconfig
+├── role-eks.tf
+├── role-spot.tf
+├── s3-kubeconfig.tf
+├── security-group-eks.tf
+├── security-group-worker.tf
+└── variables.tf
 ```
 
 --- 
@@ -172,7 +163,7 @@ module "network" {
 
 ## EKS Permission
 
-- ### File: `aws/eks/master/role-eks.tf`
+- ### File: [aws/eks/master/role-eks.tf](https://github.com/getamis/vishwakarma/blob/master/aws/eks/master/role-eks.tf)
 
 - ### Purpose:
   - ####  Give the suitable permission for access EKS Service And Create EKS Cluster
@@ -180,12 +171,15 @@ module "network" {
 ---
 
 ### EKS Permission - IAM Roles
-- File: `aws/eks/master/role-eks.tf`
+
+- File: [aws/eks/master/role-eks.tf](https://github.com/getamis/vishwakarma/blob/master/aws/eks/master/role-eks.tf)
+
 - Action:
   - Create IAM Role `AWSServiceRoleForAmazonEKS`
   - Uses the following IAM policies:
     - `AmazonEKSServicePolicy`
     - `AmazonEKSClusterPolicy`
+
 - Terraform Resources
   - `aws_iam_role`
   - `aws_iam_policy_document`
@@ -195,7 +189,8 @@ module "network" {
 
 ## EKS Master Firewall
 
-- ### File: `aws/eks/master/security-group-eks.tf`
+- ### File: [aws/eks/master/security-group-eks.tf](https://github.com/getamis/vishwakarma/blob/master/aws/eks/master/security-group-eks.tf)
+- 
 
 - ### Purpose:
   - #### Cluster communication with worker nodes
@@ -204,11 +199,14 @@ module "network" {
 --- 
 
 ### EKS Master Firewall - Security Group
-- File: `aws/eks/master/security-group-eks.tf`
+
+- File: [aws/eks/master/security-group-eks.tf](https://github.com/getamis/vishwakarma/blob/master/aws/eks/master/security-group-eks.tf)
+
 - Action:
   - AWS Security Group
     - `eks_cluster_egress` 
     - `eks_cluster_ingress_https`
+
 - Terraform Resources
   - `aws_security_group`
   - `aws_security_group_rule`
@@ -217,7 +215,7 @@ module "network" {
 
 ## EKS Master 
 
-- ### File: `aws/eks/master/cluster.tf`
+- ### File: [aws/eks/master/cluster.tf](https://github.com/getamis/vishwakarma/blob/master/aws/eks/master/cluster.tf)
 
 - ### Purpose:
   - #### Create Cluster Master with EKS Service
@@ -225,9 +223,12 @@ module "network" {
 ---
 
 ### EKS Master - Create Master 
-- File `aws/eks/master/cluster.tf`
+
+- File [aws/eks/master/cluster.tf](https://github.com/getamis/vishwakarma/blob/master/aws/eks/master/cluster.tf)
+
 - Action:
   - Create Cluster Master with EKS Service
+
 - Terraform Resources
   - `aws_eks_cluster`
   - Notice: `depends_on`
@@ -235,7 +236,8 @@ module "network" {
 ---
 
 ## Obtaining kubectl Configuration 
-- ### File: `aws/eks/master/s3-kubeconfig.tf`
+- ### File: [aws/eks/master/s3-kubeconfig.tf](https://github.com/getamis/vishwakarma/blob/master/aws/eks/master/s3-kubeconfig.tf)
+
 - ### Purpose:
   - #### Generate the kubeconfig file for kubectl
   - #### Save the kubeconfig in AWS S3 for using in future
@@ -244,10 +246,13 @@ module "network" {
 
 
 ### Obtaining kubectl Configuration
-- File: `aws/eks/master/s3-kubeconfig.tf`
+
+- File: [aws/eks/master/s3-kubeconfig.tf](https://github.com/getamis/vishwakarma/blob/master/aws/eks/master/s3-kubeconfig.tf)
+
 - Action:
   - render kubeconfig with data from eks
   - create S3 bucket for saving the kubeconfig
+
 - Terraform Resources
   - `template_file`
   - `local_file`
@@ -258,7 +263,8 @@ module "network" {
 
 ### Kubernetes Configuration to Join Worker Nodes
 
-- ### File:`aws/eks/master/aws-auth-cm.tf`
+- ### File: [aws/eks/master/aws-auth-cm.tf](https://github.com/getamis/vishwakarma/blob/master/aws/eks/master/aws-auth-cm.tf)
+
 - ### Purpose:
   - #### Allow worker nodes to join the cluster via AWS IAM role authentication.
 
@@ -266,7 +272,8 @@ module "network" {
 
 ### Kubernetes Configuration to Join Worker Nodes
 
-- File:`aws/eks/master/aws-auth-cm.tf`
+- File: [aws/eks/master/aws-auth-cm.tf](https://github.com/getamis/vishwakarma/blob/master/aws/eks/master/aws-auth-cm.tf)
+
 - Action:
 	- To output an example IAM Role authentication ConfigMap from your Terraform configuration
   	- Kubectl apply the ConfigMap
@@ -280,15 +287,19 @@ module "network" {
 
 
 ## EKS Worker Nodes
+
 - worker_common
   - Initailization of EC2 Instance
+
 - wroker_asg
   - Preparation for added into Kubernetes Cluster
 
 ---
 
 ## Worker Node Permission - IAM Role and Instance Profile
-- ### File: `aws/eks/worker-common/role.tf`
+
+- ### File: [aws/eks/worker-common/role.tf](https://github.com/getamis/vishwakarma/blob/master/aws/eks/worker-common/role.tf)
+
 - ### Purpose:
   - #### IAM role and policy to allow the worker nodes to manage or retrieve data from other AWS services.
     - #### Network
@@ -299,7 +310,9 @@ module "network" {
 ---
 
 ### Worker Node Permission - IAM Role and Instance Profile
-- File: `aws/eks/worker-common/role.tf`
+
+- File: [aws/eks/worker-common/role.tf](https://github.com/getamis/vishwakarma/blob/master/aws/eks/worker-common/role.tf)
+
 - Action:
   - Create IAM Role `EKSWorkerAssumeRole`
   - Policy 
@@ -312,7 +325,8 @@ module "network" {
 
 ## Worker Node Filewall
 
-- ### File: `aws/eks/master/security-group-worker.tf`
+- ### File: [aws/eks/master/security-group-worker.tf](https://github.com/getamis/vishwakarma/blob/master/aws/eks/master/security-group-worker.tf)
+
 - ### Purpose:
   - ### Controls networking access to the Kubernetes worker nodes.
 
@@ -320,9 +334,11 @@ module "network" {
 
 ### Worker Node Filewall - Security Group
 
-- File: `aws/eks/master/security-group-worker.tf`
+- File: [aws/eks/master/security-group-worker.tf](https://github.com/getamis/vishwakarma/blob/master/aws/eks/master/security-group-worker.tf)
+
 - Purpose:
   - Controls networking access to the Kubernetes worker nodes.
+
 - Action:
   - AWS Security Group
   	- `workers_egress_internet`
@@ -335,7 +351,9 @@ module "network" {
 ---
 
 ### Ｗorker Node AutoScaling Group
-- File: `aws/eks/worker-asg/asg.tf`
+
+- File: [aws/eks/worker-asg/asg.tf](https://github.com/getamis/vishwakarma/blob/master/aws/eks/worker-asg/asg.tf)
+
 - Purpose:
   - This setup utilizes an EC2 AutoScaling Group (ASG) rather than manually working with EC2 instances. 
   - This offers flexibility to scale up and down the worker nodes on demand.
@@ -344,9 +362,10 @@ module "network" {
 ---
 
 ### AMI
+
 - First, let us create a data source to fetch the latest Amazon Machine Image (AMI) that Amazon provides with an EKS compatible Kubernetes baked in.
 
-- `aws/eks/worker-asg/asg.tf`
+- [aws/eks/worker-asg/asg.tf](https://github.com/getamis/vishwakarma/blob/master/aws/eks/worker-asg/asg.tf)
   - `aws_autoscaling_group`
     - `aws_launch_configuration`
       - `aws_launch_configuration`
@@ -355,15 +374,17 @@ module "network" {
 ---
 
 ### AMI with Terraform module
+
 - `module.worker_common.coreos_ami_id`
-  - File: `aws/eks/worker-common/ami.tf`
+  - File: [aws/eks/worker-common/ami.tf](https://github.com/getamis/vishwakarma/blob/master/aws/eks/worker-common/ami.tf)
   - `module.container_linux`
     - try to get latest version of coreos, if needed
 
 ---
 
 ###  AutoScaling Launch Configuration
-- `aws/eks/worker-asg/asg.tf`
+
+- [aws/eks/worker-asg/asg.tf](https://github.com/getamis/vishwakarma/blob/master/aws/eks/worker-asg/asg.tf)
   - `aws_autoscaling_group`
     - `aws_launch_configuration`
 
@@ -380,11 +401,13 @@ resource "aws_launch_configuration" "workers" {
 ---
 
 ###  User Data - ignition
+
 - Ignition is a new provisioning utility designed specifically for CoreOS Container Linux. 
 - https://coreos.com/ignition/docs/latest/
 
-- File: `aws/eks/ignition`
-- File: `aws/eks/worker_common/ignition`
+- File: [aws/eks/worker-common/ignition.tf](https://github.com/getamis/vishwakarma/blob/master/aws/eks/worker-common/ignition.tf)
+
+- File: [aws/eks/ignition](https://github.com/getamis/vishwakarma/blob/master/aws/eks/ignition)
   - locksmithd
   - docker
   - ca
@@ -394,7 +417,7 @@ resource "aws_launch_configuration" "workers" {
 ---
 
 ###  User Data - ignition - utilities
-- File: `aws/eks/worker_common/ignition`
+- File: [aws/eks/worker-common/ignition.tf](https://github.com/getamis/vishwakarma/blob/master/aws/eks/worker-common/ignition.tf)
 ```
 data "ignition_config" "main" {
   files = ["${compact(list(
