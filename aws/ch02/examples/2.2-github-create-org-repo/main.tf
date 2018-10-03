@@ -5,7 +5,7 @@ provider "github" {
 
 resource "github_repository" "new_repo" {
   name        = "${var.github_repo_name}"
-  description = "Zz test for Terraform github provider"
+  description = "Test for Terraform github provider"
 
   private = false
 }

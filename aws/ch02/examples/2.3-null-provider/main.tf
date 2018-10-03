@@ -1,13 +1,12 @@
 provider "aws" {
   region                  = "us-west-2"
-  shared_credentials_file = "../credential.key"
 }
 
 data "aws_instances" "foo" {
 
   filter {
     name   = "tag:Name"
-    values = ["DevOpsDays2018"]
+    values = ["HelloTerraform"]
   }
 
   instance_state_names = [ "running", "stopped" ]
