@@ -1,14 +1,13 @@
 provider "aws" {
   region                  = "us-west-2"
-  shared_credentials_file = "../credential.key"
 }
 
 
 data "aws_instance" "foo" {
 
   filter {
-    name   = "tag:Name"
-    values = ["DevOpsDays2018"]
+    name   = "tag:aws:cloudformation:logical-id"
+    values = ["Instance"]
   }
 }
 
