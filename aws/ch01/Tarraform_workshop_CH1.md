@@ -76,7 +76,7 @@
 
 ---
 ## First EC2 Instance
-`$ cd workshop/aws/ch01/100-create-instance`
+`$ cd workshop/aws/ch01/practices/100-create-instance`
 main.tf
 ```
 provider "aws" {
@@ -110,11 +110,19 @@ It's a JSON file, Terraform use it to map from real world resource to Terraform 
 ![](./images/destroy.png)
 
 ---
+# Practice: Spining up 1st instance
+`$ cd workshop/aws/ch01/practices/100-create-instance`
+`$ terraform init`
+`$ terraform plan`
+`$ terraform apply`
+`$ terraform destroy`
+
+---
 ## Create S3 bucket for Remote State
 
 ---
 ## Create S3 bucket for Remote State
-`$ cd workshop/aws/ch01/110-create-s3-bucket`
+`$ cd workshop/aws/ch01/practices/101-create-s3-bucket`
 `$ terraform apply`
 
 ```
@@ -124,8 +132,14 @@ s3_bucket_name = worksop-s3-bucket-20181003122734550400000001
 ```
 
 ---
+# Practice: Create S3 bucket
+`$ cd workshop/aws/ch01/practices/101-create-s3-bucket`
+`$ terraform init`
+`$ terraform apply`
+
+---
 ## Terraform Remote State
-`$ cd workshop/aws/ch01/120-remote-state-variables`
+`$ cd workshop/aws/ch01/practices/102-remote-state-variables`
 backend.tf
 ```
 terraform {
@@ -209,6 +223,12 @@ output "public_ip" {
 ![](./images/output.png)
 
 ---
+# Practice: Remote State
+`$ cd workshop/aws/ch01/practices/102-remote-state-variables`
+`$ terraform init`
+`$ terraform apply`
+
+---
 # Genarate ssh key
 
 ---
@@ -221,7 +241,7 @@ output "public_ip" {
 ---
 ## Create AWS Keypair
 Execute 
-`$ cd workshop/aws/ch01/130-create-keypair`
+`$ cd workshop/aws/ch01/practices/103-create-keypair`
 `$ ./genkey.sh`
 
 main.tf
