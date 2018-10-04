@@ -72,12 +72,6 @@ ${var.example_list[i]}
 
 ---
 
-## Practice
-
-Try [ch03/300-variables-demo](https://github.com/Taipei-HUG/workshop/tree/master/aws/ch03/300-variables-demo)
-
----
-
 ## Using outputs from a module
 
 ```
@@ -95,7 +89,15 @@ ${module.foo.example_output}
 
 ## Practice
 
-Try [ch03/301-module-output-demo](https://github.com/Taipei-HUG/workshop/tree/master/aws/ch03/301-module-output-demo)
+Try [ch03/300-variables-module-output](https://github.com/Taipei-HUG/workshop/tree/master/aws/ch03/practices/300-variables-module-output)
+
+```shell
+$ cd aws/ch03/practices/300-variables-module-output
+$ terraform init
+$ terraform apply
+```
+
+And see what happened.
 
 ---
 
@@ -115,12 +117,6 @@ data "template_file" "foo" {
 // ["foo-0", "foo-1", "foo-2"]
 ${data.template_file.foo.*.rendered} 
 ```
-
----
-
-## Practice
-
-Try [ch03/302-count-demo](https://github.com/Taipei-HUG/workshop/tree/master/aws/ch03/302-count-demo)
 
 ---
 
@@ -191,7 +187,15 @@ resource "local_file" "foo" {
 
 ## Practice
 
-Try [ch03/303-attributes-path-demo](https://github.com/Taipei-HUG/workshop/tree/master/aws/ch03/303-attributes-path-demo)
+Try [ch03/301-count-attributes-path](https://github.com/Taipei-HUG/workshop/tree/master/aws/ch03/practices/301-count-attributes-path)
+
+```shell
+$ cd aws/ch03/practices/301-count-attributes-path
+$ terraform init
+$ terraform apply
+```
+
+And see what happened.
 
 ---
 
@@ -280,7 +284,15 @@ v = lookup(map, "foo", "bar")
 
 ## Practice
 
-Try [ch03/304-builtin-functions-demo](https://github.com/Taipei-HUG/workshop/tree/master/aws/ch03/304-builtin-functions-demo)
+Try [ch03/302-builtin-functions-demo](https://github.com/Taipei-HUG/workshop/tree/master/aws/ch03/practices/302-builtin-functions)
+
+```shell
+$ cd aws/ch03/practices/302-builtin-functions
+$ terraform init
+$ terraform apply
+```
+
+And see what happened.
 
 ---
 
@@ -292,15 +304,9 @@ Try [ch03/304-builtin-functions-demo](https://github.com/Taipei-HUG/workshop/tre
 
 ```
 resource "example_resource" "foo" {
-  name = "${var.env == "production" ? "foo-prod" : "foo-dev"}"
+  name = "${var.env == "prod" ? "foo-prod" : "foo-dev"}"
 }
 ```
-
-The supported operators are:
-
-* Equality: == and !=
-* Numerical comparison: >, <, >=, <=
-* Boolean logic: &&, ||, unary !
 
 ---
 
@@ -329,13 +335,17 @@ resource "local_file" "foo" {
 }
 
 data "template_file" "do_hash" {
-  template = "${sha1(element(local_file.foo.*.filename, count.index))}"
+  template = "${sha1(
+    element(local_file.foo.*.filename, count.index)
+  )}"
   count = "${length(local_file.foo.*.filename)}"
 }
 
 resource "local_file" "foo_hash" {
   filename = "${path.module}/foo-hash.txt"
-  content = "${join(",", data.template_file.do_hash.*.rendered)}"
+  content = "${join(",",
+    data.template_file.do_hash.*.rendered
+  )}"
 }
 ```
 
@@ -363,9 +373,17 @@ resource "local_file" "foo_hash" {
 
 ---
 
-## Demo
+## Practice
 
-Try [ch03/305-complex-computations](https://github.com/Taipei-HUG/workshop/tree/master/aws/ch03/305-complex-computations)
+Try [ch03/303-complex-computations](https://github.com/Taipei-HUG/workshop/tree/master/aws/ch03/practices/303-complex-computations)
+
+```shell
+$ cd aws/ch03/practices/303-complex-computations
+$ terraform init
+$ terraform apply
+```
+
+Try to refactor it using `for` after Terraform v0.12 released.
 
 ---
 
@@ -384,12 +402,11 @@ data "template_file" "prod" {
   count = "${var.env == "dev" ? 0 : 1}"
 }
 
-output "failure_cannot_be_used_with_list" {
-  value = "${var.env == "dev" ? data.template_file.dev.*.rendered : data.template_file.prod.*.rendered}"
-}
-
 output "failure_cannot_be_resolved" {
-  value = "${var.env == "dev" ? data.template_file.dev.rendered : data.template_file.prod.rendered}"
+  value = "${var.env == "dev" ? 
+    data.template_file.dev.rendered :
+    data.template_file.prod.rendered
+  }"
 }
 ```
 Both variables are resolved no matter what `var.env` is.
@@ -413,7 +430,10 @@ data "template_file" "prod" {
 }
 
 output "success" {
-  value = "${var.env == "dev" ? join("", data.template_file.dev.*.rendered) : join("", data.template_file.prod.*.rendered)}"
+  value = "${var.env == "dev" ? 
+    join("", data.template_file.dev.*.rendered) : 
+    join("", data.template_file.prod.*.rendered)
+  }"
 }
 ```
 
@@ -435,19 +455,18 @@ data "template_file" "prod" {
 }
 
 output "success" {
-  value = "${var.env == "dev" ? data.template_file.dev.rendered : data.template_file.prod.rendered}"
-}
-
-output "success_for_list" {
-  value = "${var.env == "dev" ? data.template_file.dev.*.rendered : data.template_file.prod.*.rendered}"
+  value = "${var.env == "dev" ? 
+    data.template_file.dev.rendered : 
+    data.template_file.prod.rendered
+  }"
 }
 ```
 
 ---
 
-## Demo
+## Practice
 
-Try [ch03/306-err-conditional](https://github.com/Taipei-HUG/workshop/tree/master/aws/ch03/306-err-conditional)
+Try [ch03/304-err-conditional](https://github.com/Taipei-HUG/workshop/tree/master/aws/ch03/practices/304-err-conditional)
 
 ---
 
@@ -478,22 +497,28 @@ module "example" {
 
 ## Rich Value Types
 
-Before v0.12
+After v0.12
 
 ```go
-lookup(var.value, "my_map")   // error
-lookup(var.value, "my_list")  // error
-```
+module "subnets" {
+  source = "./subnets"
 
----
-
-## Rich Value Types
-
-Accessing attributes inside nested object after v0.12 (perhaps?)
-
-```go
-${var.value.my_map}   // returns my_map
-${var.value.my_list}  // returns my_list
+  parent_vpc_id = "vpc-abcd1234"
+  networks = {
+    production_a = {
+      network_number    = 1
+      availability_zone = "us-east-1a"
+    }
+    production_b = {
+      network_number    = 2
+      availability_zone = "us-east-1b"
+    }
+    staging_a = {
+      network_number    = 1
+      availability_zone = "us-east-1a"
+    }
+  }
+}
 ```
 
 ---
