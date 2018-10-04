@@ -1,4 +1,4 @@
-# Chapter 3 - Terraform Tips
+# Chapter 2 - Terraform Tips
 
 ---
 
@@ -66,7 +66,7 @@ variable "example_list" {
 // Get the whole list
 ${var.example_list}
 
-// Return the ith element of the list 
+// Return the ith element of the list
 ${var.example_list[i]}
 ```
 
@@ -89,10 +89,10 @@ ${module.foo.example_output}
 
 ## Practice
 
-Try [ch03/300-variables-module-output](https://github.com/Taipei-HUG/workshop/tree/master/aws/ch03/practices/300-variables-module-output)
+Try [ch02/200-variables-module-output](https://github.com/Taipei-HUG/workshop/tree/master/aws/ch02/practices/200-variables-module-output)
 
 ```shell
-$ cd aws/ch03/practices/300-variables-module-output
+$ cd aws/ch02/practices/200-variables-module-output
 $ terraform init
 $ terraform apply
 ```
@@ -115,7 +115,7 @@ data "template_file" "foo" {
 
 ```go
 // ["foo-0", "foo-1", "foo-2"]
-${data.template_file.foo.*.rendered} 
+${data.template_file.foo.*.rendered}
 ```
 
 ---
@@ -135,7 +135,7 @@ ${example_resource.foo.name}
 ```
 resource "example_resource" "foo" {
   name = "foo-${count.index}"
-  
+
   count = 3
 }
 ```
@@ -161,7 +161,7 @@ ${data.example_resource.foo.name}
 ```
 data "example_resource" "foo" {
   name = "foo-${count.index}"
-  
+
   count = 3
 }
 ```
@@ -177,7 +177,7 @@ ${data.example_resource.foo.*.name}
 ```go
 resource "local_file" "foo" {
   content  = "foo"
-  
+
   // The file foo.txt will be located at module's path
   filename = "${path.module}/foo.txt"
 }
@@ -187,10 +187,10 @@ resource "local_file" "foo" {
 
 ## Practice
 
-Try [ch03/301-count-attributes-path](https://github.com/Taipei-HUG/workshop/tree/master/aws/ch03/practices/301-count-attributes-path)
+Try [ch02/201-count-attributes-path](https://github.com/Taipei-HUG/workshop/tree/master/aws/ch02/practices/201-count-attributes-path)
 
 ```shell
-$ cd aws/ch03/practices/301-count-attributes-path
+$ cd aws/ch02/practices/201-count-attributes-path
 $ terraform init
 $ terraform apply
 ```
@@ -215,11 +215,11 @@ list3 = concat(list1, list2, ...)
 
 `element`
 ```go
-// Returns a single element from a list at the given 
+// Returns a single element from a list at the given
 // index.
 //
-// If the index is greater than the number of elements, 
-// this function will wrap using a standard mod 
+// If the index is greater than the number of elements,
+// this function will wrap using a standard mod
 // algorithm.
 //
 // This function only works on flat lists
@@ -232,7 +232,7 @@ item = element(list, index)
 
 `join`
 ```go
-// Joins the list with the delimiter for a resultant 
+// Joins the list with the delimiter for a resultant
 // string.
 //
 // This function works only on flat lists.
@@ -241,7 +241,7 @@ str = join(delim, list)
 
 `file`
 ```go
-// Reads the contents of a file into the string. 
+// Reads the contents of a file into the string.
 // Variables in this file are not interpolated.
 ssh_key = file("/home/foo/.ssh/id_rsa.pub")
 ```
@@ -275,7 +275,7 @@ l3 = length(string)
 v = lookup(map, "foo")
 
 //
-// Lookup "foo" from the map. "bar" is returned if 
+// Lookup "foo" from the map. "bar" is returned if
 // "foo" doesn't exist.
 v = lookup(map, "foo", "bar")
 ```
@@ -284,10 +284,10 @@ v = lookup(map, "foo", "bar")
 
 ## Practice
 
-Try [ch03/302-builtin-functions-demo](https://github.com/Taipei-HUG/workshop/tree/master/aws/ch03/practices/302-builtin-functions)
+Try [ch02/202-builtin-functions-demo](https://github.com/Taipei-HUG/workshop/tree/master/aws/ch02/practices/202-builtin-functions)
 
 ```shell
-$ cd aws/ch03/practices/302-builtin-functions
+$ cd aws/ch02/practices/202-builtin-functions
 $ terraform init
 $ terraform apply
 ```
@@ -364,7 +364,7 @@ resource "local_file" "foo" {
 
 resource "local_file" "foo_hash" {
   filename = "${path.module}/foo-hash.txt"
-  content = "${join(",", 
+  content = "${join(",",
     for f in local_file.foo.*.filename:
     sha1(f)
   )}"
@@ -375,10 +375,10 @@ resource "local_file" "foo_hash" {
 
 ## Practice
 
-Try [ch03/303-complex-computations](https://github.com/Taipei-HUG/workshop/tree/master/aws/ch03/practices/303-complex-computations)
+Try [ch02/203-complex-computations](https://github.com/Taipei-HUG/workshop/tree/master/aws/ch02/practices/203-complex-computations)
 
 ```shell
-$ cd aws/ch03/practices/303-complex-computations
+$ cd aws/ch02/practices/203-complex-computations
 $ terraform init
 $ terraform apply
 ```
@@ -403,7 +403,7 @@ data "template_file" "prod" {
 }
 
 output "failure_cannot_be_resolved" {
-  value = "${var.env == "dev" ? 
+  value = "${var.env == "dev" ?
     data.template_file.dev.rendered :
     data.template_file.prod.rendered
   }"
@@ -430,8 +430,8 @@ data "template_file" "prod" {
 }
 
 output "success" {
-  value = "${var.env == "dev" ? 
-    join("", data.template_file.dev.*.rendered) : 
+  value = "${var.env == "dev" ?
+    join("", data.template_file.dev.*.rendered) :
     join("", data.template_file.prod.*.rendered)
   }"
 }
@@ -455,8 +455,8 @@ data "template_file" "prod" {
 }
 
 output "success" {
-  value = "${var.env == "dev" ? 
-    data.template_file.dev.rendered : 
+  value = "${var.env == "dev" ?
+    data.template_file.dev.rendered :
     data.template_file.prod.rendered
   }"
 }
@@ -466,7 +466,7 @@ output "success" {
 
 ## Practice
 
-Try [ch03/304-err-conditional](https://github.com/Taipei-HUG/workshop/tree/master/aws/ch03/practices/304-err-conditional)
+Try [ch02/204-err-conditional](https://github.com/Taipei-HUG/workshop/tree/master/aws/ch02/practices/204-err-conditional)
 
 ---
 
@@ -483,11 +483,11 @@ module "example" {
   source = "./example-module"
   value = {
       key = "value"
-      
+
       my_map = {
           key = "value"
       }
-      
+
       my_list = ["v1", "v2"]
   }
 }
