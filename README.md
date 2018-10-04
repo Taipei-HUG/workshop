@@ -58,29 +58,30 @@ resource "aws_instance" "web" {
 **目標**：理解 Terraform 基本觀念，藉由開啟 AWS EC2 Instance 的過程中，理解變數，資料，結果輸出
 
 - Provider Setup: AWS
-- Spinning up an instance 
-	- Variables 
+- Spinning up an instance
+	- Variables
 	- Data
 	- Output
 	- Remote State (AWS S3)
 
-## CH02 Terraform Advanced
+## CH02 Terraform Tips
+**目標**: Terraform 基礎/常用語法介紹，並順帶提到 Terraform 目前版本的缺陷，將比較在大版本 0.12 更新後，有哪些事情需要注意
+
+- Interpolations
+- Changes after v0.12
+  - Conditional
+  - Count V.S. For and For-Each
+  - Rich value types
+  - ...
+
+## CH03 Terraform Advanced
 **目標**: 理解日常 Terraform 開發的生命週期，並學習利用第三方的 Provider，甚至是網路上現成的 Module 來加速開發，避免重造輪子
 
 - Commands Overview
 	- init, get, plan, apply, destroy...etc
 - Other Providers
 	- Ignition, Null, Template, Github, Random...etc
-- Interpolation
 - Modules
-
-## CH03 Terraform Tips
-**目標**: Terraform 因為本身的缺陷，導致有一些 Hack 的用法，將比較在大版本 0.12 更新後，有哪些事情需要注意
-
-- Conditional Operator
-- Count V.S. For and For-Each
-- Splat Operator
-- ...
 
 ## CH04 Terraform Practices
 **目標**: 藉由開發 Module 以及第三方工具 [**Terragrunt**](https://github.com/gruntwork-io/terragrunt) 達成軟體開發 [**SOLID**](https://en.wikipedia.org/wiki/SOLID) 準則
@@ -89,13 +90,12 @@ resource "aws_instance" "web" {
 - Terragrunt Hands-On
 
 ## CH5 Terraform & EKS I
-**目標**: 理解 AWS EKS 架構，並透過講師所開發的 Modlue 在幾分鐘內將 Production Ready 的 Kubernetse 叢集建構完成
+**目標**: 理解 AWS EKS 架構，並透過講師所開發的 Module 在幾分鐘內將 Production Ready 的 Kubernetes 叢集建構完成
 
 - AWS EKS Infrastructure
 - AWS EKS Module: [vishwakarma](https://github.com/getamis/vishwakarma)
 
 ## CH06 Terraform & EKS II
-**目標**: 利用剛建立好的 Kubernetse Cluster 來理解時下最熱門 Kubernetes 內部資源操作方法，以及在生產環境維運 Kubernetes 的經驗分享
+**目標**: 進一步檢驗剛建立好的 Kubernetes Cluster 是否可正常運作
 
-- Go Through Kubernetes 101/201 within AWS EKS
-- Kubernetes Management Experience Sharing
+- Go Through Kubernetes 101/201 (reduced version) within AWS EKS
