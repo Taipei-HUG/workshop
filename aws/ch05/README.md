@@ -1,12 +1,12 @@
 <!-- page_number: true -->
 
-# CH05 EKS
+# CH05 EKS with Terraform
 
 ---
 
 ## Objectives
 
-- ### EKS Overview
+- ### Kubernetes & EKS Overview
 - ### Make a EKS Clsuter with Terraform
 - ### Concept about making a EKS Cluster for production with Terraform
 
@@ -24,11 +24,10 @@
 
 ### Key Pair
 - In order to access worker node through ssh protocol, please create a key pair in example region US West (Oregon) us-west-2
-  - `devopsdays-workshop`
 
 --- 
 
-### Get Started - Part 1
+### Practice - Part 1
 
 - `$ git clone https://github.com/getamis/vishwakarma.git`
 - `$ cd examples/eks_worker`
@@ -43,12 +42,21 @@ Enter a value:
 - `devopsdays-workshop`
 --- 
 
-### Get Started - Part 2
+### Practice - Part 2
 
 - `$ terraform apply`
 - `$ export KUBECONFIG=.terraform/kubeconfig`
 - `$ kubectl cluster-info`
 - `$ kubectl get node`
+
+---
+
+## Kubernetes
+
+- Open Source 
+- Container Automation Framework
+- Container Orchestrator  
+- Open API Based on Google’s experiences
 
 ---
 
@@ -64,13 +72,13 @@ Enter a value:
 
 ---
 
-## Vishwakarma Kubernetes
+## Vishwakarma EKS Cluster
 
-![](images/vishwakarma-kubernetes.png)
+![](images/vishwakarma-eks-complete.png)
 
 ---
 
-## EKS Cluster
+## Vishwakarma
 - repo: [GitHub - getamis/vishwakarma](https://github.com/getamis/vishwakarma)
 
 ### Modules
@@ -116,50 +124,83 @@ Enter a value:
 
 - ### aws/eks/worker-spot
 
----
+--- 
 
-### Example
+## Terraform resource dependencies
 
-- File: [examples/eks_worker/main.tf](https://github.com/getamis/vishwakarma/blob/master/examples/eks_worker/main.tf)
+- multiple resources and how to reference the attributes of other resources to configure subsequent resources.
+
+```
+resource "aws_instance" "example" {
+  ami           = "ami-2757f631"
+  instance_type = "t2.micro"
+}
+resource "aws_eip" "ip" {
+  instance = "${aws_instance.example.id}"
+}
+```
 
 --- 
 
+## Terraform implicit Dependencies dependencies
 
-## VPC Networking
+- Terraform can automatically infer when one resource depends on another. 
+- Terraform uses this dependency information to determine the correct order in which to create the different resources.
+
+- https://www.terraform.io/intro/getting-started/dependencies.html
+
+
+---
+
+## Example
+
+- File: [examples/eks_worker/main.tf](https://github.com/getamis/vishwakarma/blob/master/examples/eks_worker/main.tf)
+
+- Dependencies simple expression
+```
+workers_asg
+ 	└──> master
+	│      	└──> network
+	└──> worker-asg
+   		└──> worker-common
+
+```
+- `terraform graph`
+
+---
+
+## Vishwakarma EKS Cluster
+
+![](images/vishwakarma-eks-vpc.png)
+
+--- 
+
+## Network
+
 - One VPC
-  - One Public Subnet
-  - One Private Subnet
-  - An internet gateway
-  - setup the subnet routing to route external traffic through the internet gateway:
+  - One public Subnet
+  - One private Subnet
+  - One internet gateway
+  - One NAT gateway
+  - setup the subnet routing to route external traffic through the gateways:
 
 - Bastion is a `jump server`
   - https://docs.aws.amazon.com/quickstart/latest/linux-bastion/architecture.html
 
+
+---
+
+## Vishwakarma EKS Cluster
+
+![](images/vishwakarma-eks-master.png)
+
 --- 
 
-### EKS Master Module
+### EKS Master 
 - module: `vishwakarma/aws/eks/master`
 - This is where the EKS service comes into play. 
-- files:
-```
-master
-├── aws-auth-cm.tf
-├── cluster.tf
-├── main.tf
-├── outputs.tf
-├── resources
-│   ├── aws-auth-cm.yaml.tpl
-│   └── kubeconfig
-├── role-eks.tf
-├── role-spot.tf
-├── s3-kubeconfig.tf
-├── security-group-eks.tf
-├── security-group-worker.tf
-└── variables.tf
-```
 
 --- 
-
 
 ## EKS Permission
 
@@ -288,11 +329,19 @@ master
 
 ## EKS Worker Nodes
 
-- worker_common
-  - Initailization of EC2 Instance
+- worker-common
+  - Permission
+  - Firewall
 
-- wroker_asg
+- wroker-asg
+  - Initailization of EC2 Instance (AMI)
   - Preparation for added into Kubernetes Cluster
+
+---
+
+## worker-common
+
+![](images/vishwakarma-eks-worker-common.png)
 
 ---
 
@@ -347,6 +396,11 @@ master
     - `workers_ingress_ssh`
     - `worker_ingress_lb`
       - Kubernetes NodePort
+---
+
+## worker-asg
+
+![](images/vishwakarma-eks-worker-asg.png)
 
 ---
 
@@ -366,10 +420,7 @@ master
 - First, let us create a data source to fetch the latest Amazon Machine Image (AMI) that Amazon provides with an EKS compatible Kubernetes baked in.
 
 - [aws/eks/worker-asg/asg.tf](https://github.com/getamis/vishwakarma/blob/master/aws/eks/worker-asg/asg.tf)
-  - `aws_autoscaling_group`
-    - `aws_launch_configuration`
-      - `aws_launch_configuration`
-        - `image_id             = "${coalesce(var.ec2_ami, module.worker_common.coreos_ami_id)}"`
+  - `image_id             = "${coalesce(var.ec2_ami, module.worker_common.coreos_ami_id)}"`
 
 ---
 
@@ -443,14 +494,16 @@ data "ignition_config" "main" {
 
 ## Key Takeaways
 
-- ### EKS Overview
+
+- ### Kubernetes & EKS Overview
+  - Kubernetes Architecture Concept
   - EKS Master
   - EKS WorkNode
 - ### Make a EKS Clsuter with Terraform
   - AWS EKS Service
   - Other Service ...
 - ### Concept about making a EKS Cluster for production with Terraform
-  - Perrmision
+  - Terraform module & resource dependencies
   - Network & Firewall
   - Instances & Utilities
 
