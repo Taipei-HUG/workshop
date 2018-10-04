@@ -7,9 +7,17 @@
 * Verify the functionality of created cluster in chapter 5
   * Kubernetes control plane
   * Kube-DNS
-  * Kube-Proxy  
+  * Kube-Proxy
 * Manage a Deployment
 * Manage a Service
+
+---
+
+## Setup kubeconfig
+
+```shell
+export KUBECONFIG=.terraform/kubeconfig
+```
 
 ---
 
@@ -18,7 +26,8 @@
 Create an nginx Deployment:
 
 ```shell
-kubectl create -f https://k8s.io/examples/application/deployment.yaml
+kubectl create -f \
+https://k8s.io/examples/application/deployment.yaml
 ```
 
 ---
@@ -44,7 +53,8 @@ kubectl get pods -l app=nginx
 Create an nginx Service:
 
 ```shell
-kubectl create -f https://k8s.io/examples/service/nginx-service.yaml
+kubectl create -f \
+https://k8s.io/examples/service/nginx-service.yaml
 ```
 
 List all services:
@@ -60,8 +70,14 @@ kubectl get services
 Provided the service IP is accessible, you should be able to access its http endpoint with wget on the exposed port:
 
 ```shell
-export SERVICE_IP=$(kubectl get service nginx-service -o go-template='{{.spec.clusterIP}}')
-export SERVICE_PORT=$(kubectl get service nginx-service -o go-template='{{(index .spec.ports 0).port}}')
+export SERVICE_IP=$(\
+  kubectl get service nginx-service \
+  -o go-template='{{.spec.clusterIP}}'\
+)
+export SERVICE_PORT=$(\
+  kubectl get service nginx-service \
+  -o go-template='{{(index .spec.ports 0).port}}'\
+)
 ```
 
 Check `$SERVICE_IP` and `$SERVICE_PORT`:
@@ -76,11 +92,22 @@ echo "$SERVICE_IP:$SERVICE_PORT"
 
 Then, create a busybox Pod:
 ```shell
-kubectl run busybox --generator=run-pod/v1 --image=busybox --restart=Never --tty -i --env "SERVICE_IP=$SERVICE_IP" --env "SERVICE_PORT=$SERVICE_PORT"
+kubectl run busybox \
+  --generator=run-pod/v1 --image=busybox \
+  --restart=Never --tty -i \
+  --env "SERVICE_IP=$SERVICE_IP" \
+  --env "SERVICE_PORT=$SERVICE_PORT"
+```
 
-u@busybox$ wget -qO- http://$SERVICE_IP:$SERVICE_PORT # Run in the busybox container
-u@busybox$ wget -qO- http://nginx-service.default:$SERVICE_PORT # Run in the busybox container
-u@busybox$ exit # Exit the busybox container
+```shell
+# Run in the busybox container
+u@busybox$ wget -qO- \
+http://$SERVICE_IP:$SERVICE_PORT
+u@busybox$ wget -qO- \
+http://nginx-service.default:$SERVICE_PORT
+
+# Exit the busybox container
+u@busybox$ exit
 ```
 
 After verification, delete the busybox Pod
@@ -110,5 +137,5 @@ kubectl delete deployment nginx-deployment
 
 ## Key Takeaways
 
-* Deployments manage Pods lifecycle
-* Services manage access of Pods
+* Create a Deployment to verify the **Kubernetes control plane**
+* Create a Service to verify **kube-dns** and **kube-proxy**
