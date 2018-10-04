@@ -72,6 +72,16 @@ ${var.example_list[i]}
 
 ---
 
+## Using outputs
+
+```
+output "foo" {
+  value = "foo"
+}
+```
+
+---
+
 ## Using outputs from a module
 
 ```
