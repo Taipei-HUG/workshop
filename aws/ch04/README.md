@@ -2,30 +2,45 @@
 
 ## - Believe Everyone Have Learned How to Leverage Terraform to Manage AWS Resource
 
-## - Now We Will Introduce How Develop Module and Make Your Terraform More Professional
+## - Now I Want to Share My Some Experience About Developing Terraform
 ---
 
 # Objectives
 
 ## - What is Terragrunt?
 
-## - Modularize Everything
+## - Modularize Everything Easily
 
 ## - Create AWS Resource in Multiple Region
 
 ---
+# Terraform Repository Fold Structure
+
+```
+practices/
+├── account_a
+│   ├── ap-northeast-1
+│   │   └── dev
+│   │       └── frontend
+│   └── us-west-2
+│       └── dev
+│           └── frontend
+└── modules
+    └── kubernetes
+```
+---
 # What You Need In A Terraform Folder At Least Before?
 
 ```
-Frontend/
-├── Makefile           (Terraform Related Tasks)
-├── env                (Variable From Environment Variable)
-├── asg.tf             (Define Cloud Provider Resources)
-├── lb.tf              (Define Cloud Provider Resources)
-├── operations         (Some Helper Shell Script For Makefile)
-├── terraform.tfvars   (Some Predefined Variable Value)
+frontend/
+├── Makefile         (Common Command)
+├── env              (Environment Variable)
+├── asg.tf           (Cloud Provider Resources)
+├── lb.tf            (Cloud Provider Resources)
+├── operations       (Helper Shell Script)
+├── terraform.tfvars (Predefined Variable Value)
 ├── ...
-└── variables.tf       (Variable Definition)
+└── variables.tf     (Variable Definition)
 ```
 ---
 
@@ -35,19 +50,18 @@ Frontend/
 
 ## - Deploy Service Within Multiple Regions
 
-## - Trust Me, The Terraform Repository Will Become Mess 
+## - Trust Me, The Terraform Repository Will Become Mess, Spend More Time to Maintain It! 
 
-## - And Need to Takes Time to Maintain Makefile and Helper Scripts
-
+## - Not to Mention Co-Working with Other Team Members
 ---
 
 # What is Terragrunt?
 
 ## - Terragrunt is a Thin `Wrapper` for Terraform
 
-## - Provides Extra Tools for Keeping Your Terraform Configurations DRY (`Don't Repeat Yourself`)
+## - Provides Extra Tools for Keeping Your Terraform Configurations DRY (Working with Multiple Terraform `Modules`, and Managing `Remote State`)
 
-## - Working with Multiple Terraform `Modules`, and Managing `Remote State`
+## - Keep your Terraform code DRY
 
 ---
 
@@ -61,49 +75,73 @@ Frontend/
 # What It Looks Like After Using Terragrunt
 
 ```
-examples/
-└── account_a
-    ├── ap-northeast-1
-    │   └── dev
-    │       ├── env.tfvars
-    │       ├── frontend
-    │       │   └── terraform.tfvars
-    │       └── terraform.tfvars
-    └── us-west-2
-        └── dev
-            ├── env.tfvars
-            ├── frontend
-            │   └── terraform.tfvars
-            └── terraform.tfvars
+practices/
+├── account_a
+│   ├── ap-northeast-1
+│   │   └── dev
+│   │       ├── env.tfvars
+│   │       ├── frontend
+│   │       │   └── terraform.tfvars
+│   │       └── terraform.tfvars
+│   └── us-west-2
+│       └── dev
+│           ├── env.tfvars
+│           ├── frontend
+│           │   └── terraform.tfvars
+│           └── terraform.tfvars
+└── modules
+    └── kubernetes
 ```
 
 ---
 
 # Exercise I
 
-## Try to Create A Fountend Server Group in Tokyo...
+## - Try to Create A Fountend Server Group in Tokyo...
+
+## - Edit `terraform.tfvars` in practices/account_a/ap-northeast-1/dev, Change The `bucket` Value
 
 ```
-~$ cd ch04/examples/account_a/ap-northeast-1/dev/frontend
+~$ cd aws/ch04/practices
+~$ cd account_a/ap-northeast-1/dev/frontend
 
 ~$ terragrunt init
-
 ~$ terragrunt apply
+```
 
 ```
+Apply complete! Resources: 0 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+frontend_lb_dns_name = dev-frontend-443143937.ap-northeast-1.elb.amazonaws.com
+ubuntu_ami_id = ami-06c43a7df16e8213c
+```
+
+
 ---
 
 # Exercise II
 
-## If I Want to Achieve the Same Thing in Oregon...
+## - If I Want to Achieve the Same Thing in Oregon...
+
+## - Edit `terraform.tfvars` in practices/account_a/us-west-2/dev, Change The `bucket` Value (The Same as Previous One)
 
 ```
-~$ cd ch04/examples/account_a/us-west-2/dev/frontend
+~$ cd ch04/practices
+~$ cd account_a/us-west-2/dev/frontend
 
 ~$ terragrunt init
-
 ~$ terragrunt apply
+```
 
+```
+Apply complete! Resources: 15 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+frontend_lb_dns_name = dev-frontend-1834646447.us-west-2.elb.amazonaws.com
+ubuntu_ami_id = ami-0e32ec5bc225539f5
 ```
 ---
 
@@ -115,15 +153,14 @@ examples/
 
 ## - Let Us Go Through What Terragrunt Do! 
 
-```
-~$ cd ch04/examples/account_a/us-west-2/dev
-```
+## - Edit `terraform.tfvars` in practices/account_a/us-west-2/dev
+
 
 ---
 
-# `account_a/ap-northeast-1/dev/terraform.tfvars`
+# `dev/terraform.tfvars`
 
-## - In folder `dev` Define Remote State Backend, Enviornment Variable
+## - Define Remote State Backend
 
 ```
 terragrunt = {
@@ -143,9 +180,9 @@ terragrunt = {
 ```
 ---
 
-# `account_a/ap-northeast-1/dev/terraform.tfvars`
+# `dev/terraform.tfvars`
 
-## - In folder `dev` Define Remote State Backend, Enviornment Variable
+## - Define Enviornment Variable, Command
 
 ```
 terragrunt = {
@@ -166,9 +203,9 @@ terragrunt = {
 ---
 
 
-# account_a/ap-northeast-1/dev/frontend/terraform.tfvars
+# dev/frontend/terraform.tfvars
 
-## - In folder `frontend` Define Module Source, and the Variable Pass to Module terraform-aws-frontend
+## - Define Module Source From terraform-aws-frontend
 
 ```
 terragrunt = {
@@ -188,10 +225,9 @@ terragrunt = {
 ```
 ---
 
+# dev/frontend/terraform.tfvars
 
-# account_a/ap-northeast-1/dev/frontend/terraform.tfvars
-
-## - In folder `frontend` Define Module Source, and the Variable Pass to Module terraform-aws-frontend
+## - Define the Variable Pass to Module terraform-aws-frontend
 
 ```
 ...
@@ -276,12 +312,27 @@ provider "template" {
 # Destroy Resource Created by Exercise
 
 ```
-~$ cd ch04/examples/account_a/ap-northeast-1/dev/frontend
-
+~$ cd ch04/practices
+~$ cd account_a/ap-northeast-1/dev/frontend
 ~$ terragrunt destroy
+```
 
-~$ cd ch04/examples/account_a/us-west-2/dev/frontend
+```
+...
+aws_default_vpc.default: Destruction complete after 0s
 
+Destroy complete! Resources: 15 destroyed.
+```
+
+```
+~$ cd ch04/practices
+~$ cd account_a/us-west-2/dev/frontend
 ~$ terragrunt destroy
+```
 
+```
+...
+aws_default_vpc.default: Destruction complete after 0s
+
+Destroy complete! Resources: 15 destroyed.
 ```
