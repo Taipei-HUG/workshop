@@ -40,16 +40,9 @@ var.key_pair_name
 Enter a value:
 ```
 - `devopsdays-workshop`
+- `$ terraform apply`
 --- 
 
-### Practice - Part 2
-
-- `$ terraform apply`
-- `$ export KUBECONFIG=.terraform/kubeconfig`
-- `$ kubectl cluster-info`
-- `$ kubectl get node`
-
----
 
 ## Kubernetes
 
@@ -103,13 +96,13 @@ Enter a value:
 │   ├── master
 │   │   └── resources
 │   ├── worker-asg
-│   ├── worker-common
+│   ├── worker-commonw
 │   └── worker-spot
 └── network
 ```
 ---
 
-## Vishwakarma modules
+## Vishwakarma aws & eks modules
 
 - ### aws/network
   - One AWS VPC includes private and public subnet
@@ -149,33 +142,32 @@ resource "aws_eip" "ip" {
 
 - https://www.terraform.io/intro/getting-started/dependencies.html
 
-
 ---
 
 ## Example
 
 - File: [examples/eks_worker/main.tf](https://github.com/getamis/vishwakarma/blob/master/examples/eks_worker/main.tf)
 
-- Dependencies simple expression
+- Simple expression of dependencies 
 ```
 workers_asg
  	└──> master
 	│      	└──> network
 	└──> worker-asg
-   		└──> worker-common
+    		└──> worker-common
 
 ```
 - `terraform graph`
 
 ---
 
-## Vishwakarma EKS Cluster
+## EKS Cluster Network
 
 ![](images/vishwakarma-eks-vpc.png)
 
 --- 
 
-## Network
+## EKS Cluster Network Details
 
 - One VPC
   - One public Subnet
@@ -190,19 +182,19 @@ workers_asg
 
 ---
 
-## Vishwakarma EKS Cluster
+## EKS Cluster Master
 
 ![](images/vishwakarma-eks-master.png)
 
 --- 
 
-### EKS Master 
-- module: `vishwakarma/aws/eks/master`
+### EKS Cluster Master 
+- module: [aws/eks/master](https://github.com/getamis/vishwakarma/tree/master/aws/eks/master)
 - This is where the EKS service comes into play. 
 
 --- 
 
-## EKS Permission
+## EKS Cluster Master Permission
 
 - ### File: [aws/eks/master/role-eks.tf](https://github.com/getamis/vishwakarma/blob/master/aws/eks/master/role-eks.tf)
 
@@ -211,7 +203,7 @@ workers_asg
 
 ---
 
-### EKS Permission - IAM Roles
+### EKS Cluster Master Permission - IAM Roles
 
 - File: [aws/eks/master/role-eks.tf](https://github.com/getamis/vishwakarma/blob/master/aws/eks/master/role-eks.tf)
 
@@ -228,7 +220,7 @@ workers_asg
 
 ---
 
-## EKS Master Firewall
+## EKS Cluster Master Firewall
 
 - ### File: [aws/eks/master/security-group-eks.tf](https://github.com/getamis/vishwakarma/blob/master/aws/eks/master/security-group-eks.tf)
 - 
@@ -239,7 +231,7 @@ workers_asg
 
 --- 
 
-### EKS Master Firewall - Security Group
+### EKS Cluster Master Firewall - Security Group
 
 - File: [aws/eks/master/security-group-eks.tf](https://github.com/getamis/vishwakarma/blob/master/aws/eks/master/security-group-eks.tf)
 
@@ -254,7 +246,7 @@ workers_asg
 
 ---
 
-## EKS Master 
+## EKS Cluster Master
 
 - ### File: [aws/eks/master/cluster.tf](https://github.com/getamis/vishwakarma/blob/master/aws/eks/master/cluster.tf)
 
@@ -263,7 +255,7 @@ workers_asg
 
 ---
 
-### EKS Master - Create Master 
+### EKS Cluster Master - Create Master 
 
 - File [aws/eks/master/cluster.tf](https://github.com/getamis/vishwakarma/blob/master/aws/eks/master/cluster.tf)
 
@@ -327,15 +319,15 @@ workers_asg
 ---
 
 
-## EKS Worker Nodes
+## EKS Cluster Worker Nodes
 
-- worker-common
-  - Permission
-  - Firewall
-
-- wroker-asg
+- [wroker-asg](https://github.com/getamis/vishwakarma/tree/master/aws/eks/worker-asg)
   - Initailization of EC2 Instance (AMI)
   - Preparation for added into Kubernetes Cluster
+
+- [worker-common](https://github.com/getamis/vishwakarma/tree/master/aws/eks/worker-common)
+  - Permission
+  - Firewall
 
 ---
 
@@ -489,6 +481,14 @@ data "ignition_config" "main" {
   ]
 }
 ```
+
+---
+
+### Practice - Part 2
+
+- `$ export KUBECONFIG=.terraform/kubeconfig`
+- `$ kubectl cluster-info`
+- `$ kubectl get node`
 
 ---
 
