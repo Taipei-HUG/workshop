@@ -1,6 +1,6 @@
 <!-- page_number: true -->
 
-# CH05 EKS with Terraform
+# CH05 Terraform & EKS I
 
 ---
 
@@ -169,15 +169,16 @@ workers_asg
 
 ## EKS Cluster Network Details
 
+- module: [aws/network](https://github.com/getamis/vishwakarma/tree/master/aws/network)
+
 - One VPC
   - One public Subnet
   - One private Subnet
   - One internet gateway
   - One NAT gateway
   - setup the subnet routing to route external traffic through the gateways:
-
-- Bastion is a `jump server`
-  - https://docs.aws.amazon.com/quickstart/latest/linux-bastion/architecture.html
+  - One bastion is a `jump server`
+  	- https://docs.aws.amazon.com/quickstart/latest/linux-bastion/architecture.html
 
 
 ---
@@ -188,9 +189,20 @@ workers_asg
 
 --- 
 
-### EKS Cluster Master 
+### EKS Cluster Master Details
 - module: [aws/eks/master](https://github.com/getamis/vishwakarma/tree/master/aws/eks/master)
 - This is where the EKS service comes into play. 
+- Expected 
+  - IAM Role
+  - Security Group
+  - EKS Master
+  - kubeconfig
+
+--- 
+
+## EKS Cluster Master 
+
+![](images/vishwakarma-eks-master.png)
 
 --- 
 
@@ -220,6 +232,14 @@ workers_asg
 
 ---
 
+
+## EKS Cluster Master 
+
+![](images/vishwakarma-eks-master.png)
+
+--- 
+
+
 ## EKS Cluster Master Firewall
 
 - ### File: [aws/eks/master/security-group-eks.tf](https://github.com/getamis/vishwakarma/blob/master/aws/eks/master/security-group-eks.tf)
@@ -246,6 +266,14 @@ workers_asg
 
 ---
 
+
+## EKS Cluster Master 
+
+![](images/vishwakarma-eks-master.png)
+
+--- 
+
+
 ## EKS Cluster Master
 
 - ### File: [aws/eks/master/cluster.tf](https://github.com/getamis/vishwakarma/blob/master/aws/eks/master/cluster.tf)
@@ -267,6 +295,13 @@ workers_asg
   - Notice: `depends_on`
 
 ---
+
+
+## EKS Cluster Master 
+
+![](images/vishwakarma-eks-master.png)
+
+--- 
 
 ## Obtaining kubectl Configuration 
 - ### File: [aws/eks/master/s3-kubeconfig.tf](https://github.com/getamis/vishwakarma/blob/master/aws/eks/master/s3-kubeconfig.tf)
@@ -331,7 +366,7 @@ workers_asg
 
 ---
 
-## worker-common
+## EKS Cluster Ｗorker Node Common
 
 ![](images/vishwakarma-eks-worker-common.png)
 
@@ -364,6 +399,13 @@ workers_asg
 
 ---
 
+## EKS Cluster Ｗorker Node Common
+
+![](images/vishwakarma-eks-worker-common.png)
+
+---
+
+
 ## Worker Node Filewall
 
 - ### File: [aws/eks/master/security-group-worker.tf](https://github.com/getamis/vishwakarma/blob/master/aws/eks/master/security-group-worker.tf)
@@ -390,7 +432,7 @@ workers_asg
       - Kubernetes NodePort
 ---
 
-## worker-asg
+## EKS Cluster Ｗorker Node AutoScaling Group
 
 ![](images/vishwakarma-eks-worker-asg.png)
 
@@ -407,7 +449,7 @@ workers_asg
 
 ---
 
-### AMI
+### Amazon Machine Image
 
 - First, let us create a data source to fetch the latest Amazon Machine Image (AMI) that Amazon provides with an EKS compatible Kubernetes baked in.
 
