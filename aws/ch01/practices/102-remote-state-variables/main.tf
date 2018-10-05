@@ -8,4 +8,6 @@ resource "aws_instance" "example" {
   tags {
     Name = "HelloTerraform"
   }
+  # Uncomment count for practice 303-null-provider
+  # count         = 2
 }
