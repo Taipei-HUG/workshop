@@ -15,7 +15,6 @@
 - Setup Cloud9 Envieonment
 - Spining up an instance with Terraform
   - Variables
-  - Data
   - Output 
   - Remote State (S3)
   - init/apply
@@ -37,6 +36,8 @@
 ![bg 95%](./images/AWS_VPC.png)
 ## AWS Component
 - VPC
+- Internet Gateway
+- Subnet
 - Security Group
 - EC2
 - S3
@@ -61,7 +62,8 @@
 
 ---
 ## Cloud9 Environment Settung(3/3)
-- Test with `aws sts get-caller-identity`
+- Test with command 
+  `$ aws sts get-caller-identity`
 ![](./images/cloud9-3.png)
 
 
@@ -175,8 +177,8 @@ variables.tf
 variable "region" {
   default = "us-west-1"
 }
-variable "instance_type" {}
 variable "ami" {}
+variable "instance_type" {}
 ```
 main.tf
 ```
@@ -201,11 +203,13 @@ region="us-west-2"
 ami="ami-0bbe6b35405ecebdb"
 vm_size="t2.micro"
 ```
-Execute command:
-```
-$ terraform init
-$ terraform apply -var-file=./prod.tfvar
-```
+
+There have multi-way to assign variable in terraform
+- Default value at variables.tf
+- Set variables on the command-line with "**-var**" flag
+- From file with "**-var-file**" flag
+- From environment variables start with "**TF_VAR_**"
+
 ---
 # Terraform Output
 
@@ -226,23 +230,15 @@ output "public_ip" {
 # Practice: Remote State
 `$ cd workshop/aws/ch01/practices/102-remote-state-variables`
 `$ terraform init`
-`$ terraform apply`
-
----
-# Genarate ssh key
-
----
-## Genarate ssh key
-`$ ssh-keygen -f /home/cloud9/.ssh/id_rsa -P ''`
+`$ terraform apply -var-file=./prod.tfvar`
 
 ---
 # Create AWS Keypair
 
 ---
 ## Create AWS Keypair
-Execute 
-`$ cd workshop/aws/ch01/practices/103-create-keypair`
-`$ ./genkey.sh`
+genkey.sh
+`$ ssh-keygen -f /home/cloud9/.ssh/id_rsa -P ''`
 
 main.tf
 ```
@@ -251,6 +247,13 @@ resource "aws_key_pair" "devopsdays-workshop" {
   public_key = "${file(pathexpand("/home/cloud9/.ssh/id_rsa.pub"))}"
 }
 ```
+`$ terraform apply`
+
+---
+# Practice: Create AWS Keypair
+`$ cd workshop/aws/ch01/practices/103-create-keypair`
+`$ ./genkey.sh`
+`$ terraform init`
 `$ terraform apply`
 
 ---
