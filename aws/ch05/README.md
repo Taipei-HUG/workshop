@@ -30,6 +30,8 @@
 ### Practice - Part 1
 
 - `$ git clone https://github.com/getamis/vishwakarma.git`
+- `$ git checkout taipei-hug-workshop`
+- `$ git pull`
 - `$ cd examples/eks_worker`
 - `$ terraform init`
 - `$ terraform plan`
@@ -356,17 +358,18 @@ workers_asg
 
 ## EKS Cluster Worker Nodes
 
+- [worker-common](https://github.com/getamis/vishwakarma/tree/master/aws/eks/worker-common)
+  - Permission
+  - Firewall
+  - Build AMI
+
 - [wroker-asg](https://github.com/getamis/vishwakarma/tree/master/aws/eks/worker-asg)
   - Initailization of EC2 Instance (AMI)
   - Preparation for added into Kubernetes Cluster
 
-- [worker-common](https://github.com/getamis/vishwakarma/tree/master/aws/eks/worker-common)
-  - Permission
-  - Firewall
-
 ---
 
-## EKS Cluster Ｗorker Node Common
+## EKS Cluster Worker Node Common
 
 ![](images/vishwakarma-eks-worker-common.png)
 
