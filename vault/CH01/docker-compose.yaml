@@ -1,0 +1,19 @@
+version: "3"
+services:
+  vault:
+    container_name: workshop-vault
+    image: vault:1.1.2
+    cap_add:
+      - IPC_LOCK
+    environment:
+      - VAULT_DEV_ROOT_TOKEN_ID=${VAULT_TOKEN}
+      - VAULT_DEV_LISTEN_ADDRESS=${VAULT_DEV_LISTEN_ADDRESS}
+    ports:
+      - 8080:8080
+  mysql:
+    container_name: workshop-mysql
+    image: mysql:5.7
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    ports:
+      - 3307:3306

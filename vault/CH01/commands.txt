@@ -1,0 +1,32 @@
+# start vault & mysql on docker-compose
+docker-compose up -d
+
+# get a shell on vault container
+docker exec -it workshop-vault sh
+
+# setup vault address
+export VAULT_ADDR=http://127.0.0.1:8080
+
+# set a vault token to access it
+export VAULT_TOKEN=my-root-token
+
+# get vault status
+vault status
+
+# list all key-value in secret/
+vault kv list secret
+
+# create a new kv data with foo=bar
+vault kv put secret/first-secret foo=bar
+
+# get kv data
+vault kv get secret/first-secret
+
+# update a kv data
+vault kv put secret/first-secret foo=bar test=true
+
+# get metadata of a kv data with versions
+vault kv metadata get secret/first-secret
+
+# delete a kv data
+vault kv delete secret/first-secret
