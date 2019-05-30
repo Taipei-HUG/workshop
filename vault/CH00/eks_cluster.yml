@@ -1,0 +1,11 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: workshop
+  region: us-west-2
+
+nodeGroups:
+  - name: ng0
+    instanceType: t3.large
+    desiredCapacity: 2
