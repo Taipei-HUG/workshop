@@ -1,0 +1,19 @@
+version: "3"
+services:
+  vault:
+    container_name: ch03-vault
+    image: vault:1.1.2
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - ./config:/vault/config
+      - ./file:/vault/file
+      - ./policy:/vault/policy
+    ports:
+      - 8200:8200
+    environment:
+      - VAULT_ADDR=${VAULT_ADDR}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    command : 
+      - "server"
