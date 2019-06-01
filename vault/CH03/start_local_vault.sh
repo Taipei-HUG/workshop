@@ -1,5 +1,6 @@
 #!/bin/bash
 
+unset VAULT_ADDR
 
 docker-compose up -d
 
