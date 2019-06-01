@@ -30,3 +30,6 @@ vault kv metadata get secret/first-secret
 
 # delete a kv data
 vault kv delete secret/first-secret
+
+# delete a kv metadata
+vault kv metadata delete secret/first-secret
