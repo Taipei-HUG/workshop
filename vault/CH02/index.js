@@ -21,7 +21,7 @@ async function main() {
   await vault.revoke({ lease_id: credential.lease_id });
   console.log(
     `use this command to access mysql & revoke credential: \n` +
-      `- mysql -u ${username} -P 3307 -h 127.0.0.1 -p"${password}"\n` +
+      `- mysql -u ${user} -P 3307 -h 127.0.0.1 -p"${password}"\n` +
       `- vault lease revoke ${credential.lease_id}`
   );
   process.exit(0);
